@@ -15,7 +15,14 @@ import (
 var _ Sender = SMTPSender{}
 
 type SMTPConfig struct {
-	skymailer.ServerAuth
+	// SMTP server hostname
+	Host string
+	// SMTP server port
+	Port string
+	// SMTP server username
+	Username string
+	// SMTP server password
+	Password string
 	// Address to appear as sender of emails
 	FromAddress string
 	// Human-readable name to appear as sender of emails
@@ -36,8 +43,13 @@ type SMTPSender struct {
 
 // Create a new SMTPSender from cfg. No connection is made until Send is called.
 //
-// Host, Port, and FromAddress are required and must be non-empty.
+// Host, Port, Username, Password, and FromAddress are required and must be non-empty.
 func NewSMTPSender(cfg SMTPConfig) (*SMTPSender, error) {
+	auth, err := skymailer.NewServerAuth(cfg.Host, cfg.Port, cfg.Username, cfg.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	if cfg.FromAddress == "" {
 		return nil, errors.New("email: SMTPConfig.FromAddress must not be empty")
 	}
@@ -48,7 +60,7 @@ func NewSMTPSender(cfg SMTPConfig) (*SMTPSender, error) {
 	}
 
 	return &SMTPSender{
-		ServerAuth: cfg.ServerAuth,
+		ServerAuth: auth,
 		fromAddress: mail.Address{
 			Name:    cfg.FromName,
 			Address: addr,
