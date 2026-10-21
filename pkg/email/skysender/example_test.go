@@ -3,19 +3,15 @@ package skysender_test
 import (
 	"fmt"
 
-	"github.com/hmcalister/skysatchel/internal/skymailer"
 	"github.com/hmcalister/skysatchel/pkg/email/skysender"
 )
 
 func ExampleNewSMTPSender() {
-	auth, err := skymailer.NewServerAuth("smtp.example.com", "465", "user", "secret")
-	if err != nil {
-		fmt.Println("error:", err)
-		return
-	}
-
 	sender, err := skysender.NewSMTPSender(skysender.SMTPConfig{
-		ServerAuth:         auth,
+		Host:               "smtp.example.com",
+		Port:               "465",
+		Username:           "user",
+		Password:           "secret",
 		FromAddress:        "reports@example.com",
 		FromName:           "Reports",
 		MaxAttachmentBytes: 10 << 20,

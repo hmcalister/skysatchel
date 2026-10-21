@@ -34,15 +34,11 @@ func (m *mockMailer) Deliver(_ context.Context, params skymailer.MailerDeliverPa
 
 func newTestSender(t *testing.T, m *mockMailer) *SMTPSender {
 	t.Helper()
-	mailerServerAuth, _ := skymailer.NewServerAuth(
-		"smtp.example.com",
-		"465",
-		"user",
-		"secret",
-	)
-
 	sender, _ := NewSMTPSender(SMTPConfig{
-		ServerAuth:  mailerServerAuth,
+		Host:        "smtp.example.com",
+		Port:        "465",
+		Username:    "user",
+		Password:    "secret",
 		FromAddress: "noreply@example.com",
 		FromName:    "Cloud",
 		Timeout:     time.Second,

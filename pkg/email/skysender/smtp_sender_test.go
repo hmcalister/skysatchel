@@ -7,20 +7,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hmcalister/skysatchel/internal/skymailer"
 	skysatchel "github.com/hmcalister/skysatchel/pkg/email"
 )
 
 func TestNewSMTPRejectsBadFrom(t *testing.T) {
-	mailerServerAuth, _ := skymailer.NewServerAuth(
-		"smtp.example.com",
-		"465",
-		"user",
-		"secret",
-	)
 	_, err := NewSMTPSender(
 		SMTPConfig{
-			ServerAuth:  mailerServerAuth,
+			Host:        "smtp.example.com",
+			Port:        "465",
+			Username:    "user",
+			Password:    "secret",
 			FromAddress: "not-an-address",
 			Timeout:     time.Second,
 		})
@@ -30,15 +26,33 @@ func TestNewSMTPRejectsBadFrom(t *testing.T) {
 }
 
 func TestNewSMTPRejectsEmptyFrom(t *testing.T) {
-	mailerServerAuth, _ := skymailer.NewServerAuth(
-		"smtp.example.com",
-		"465",
-		"user",
-		"secret",
-	)
-	_, err := NewSMTPSender(SMTPConfig{ServerAuth: mailerServerAuth})
+	_, err := NewSMTPSender(SMTPConfig{
+		Host:     "smtp.example.com",
+		Port:     "465",
+		Username: "user",
+		Password: "secret",
+	})
 	if err == nil {
 		t.Fatal("got nil error, expecting error on empty from address")
+	}
+}
+
+func TestNewSMTPRejectsMissingServerAuth(t *testing.T) {
+	tests := []struct {
+		name string
+		cfg  SMTPConfig
+	}{
+		{"empty host", SMTPConfig{Port: "465", Username: "user", Password: "secret", FromAddress: "noreply@example.com"}},
+		{"empty port", SMTPConfig{Host: "smtp.example.com", Username: "user", Password: "secret", FromAddress: "noreply@example.com"}},
+		{"empty username", SMTPConfig{Host: "smtp.example.com", Port: "465", Password: "secret", FromAddress: "noreply@example.com"}},
+		{"empty password", SMTPConfig{Host: "smtp.example.com", Port: "465", Username: "user", FromAddress: "noreply@example.com"}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := NewSMTPSender(tc.cfg); err == nil {
+				t.Fatal("got nil error, expecting error on missing server auth field")
+			}
+		})
 	}
 }
 
