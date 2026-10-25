@@ -1,7 +1,6 @@
 # Sky Satchel
 
-An email library for Go: build, validate, and send MIME email over SMTP, with optional
-per-address and global rate limiting.
+An email library for Go: build, validate, and send MIME email over SMTP, with optional per-address and global rate limiting.
 
 [![CI](https://github.com/hmcalister/skysatchel/actions/workflows/cicd.yml/badge.svg)](https://github.com/hmcalister/skysatchel/actions/workflows/cicd.yml)
 [![codecov](https://codecov.io/gh/hmcalister/skysatchel/branch/main/graph/badge.svg)](https://codecov.io/gh/hmcalister/skysatchel)
